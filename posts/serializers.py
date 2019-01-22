@@ -10,6 +10,21 @@ class LikesSerializer(serializers.ModelSerializer):
         fields = ['id', 'username']
 
 
+class PostCommitSerializer(serializers.ModelSerializer):
+    likes = LikesSerializer(many = True, read_only = True)
+
+    class Meta:
+        model = Commit
+        fields = [
+            'id',
+            'creator',
+            'content',
+            'likes',
+            'create_at',
+            'update_at',
+        ]
+
+
 class CommitsSerializer(serializers.ModelSerializer):
     likes = LikesSerializer(many = True, read_only = True)
     class Meta:

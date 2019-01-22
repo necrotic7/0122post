@@ -6,8 +6,8 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS #登入驗證 
 
 
-from .models import Post
-from .permissions import IsCreatorOrReadOnly
+from .models import Post, Commit
+from .permissions import IsCreatorOrReadOnly, CanUpdateOrDeleteCommit
 from .serializers import PostSerializer, CommitsSerializer
 
 
@@ -41,21 +41,21 @@ class PostViewSet(viewsets.ModelViewSet):
     
 
 class CommitViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Commit.objects.all()
     serializer_class = CommitsSerializer
-    permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
+    # permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(creator = self.request.user)
 
-    @action(['PATCH'], True, permission_classes = [IsAuthenticated])
+    @action(['PATCH'], True, permission_classes = [IsAuthenticated, CanUpdateOrDeleteCommit])
     def like(self, request, pk):
-        post = self.get_object()
+        commit = self.get_object()
 
-        if request.user in post.likes.all():  #如果使用者在這篇文已按讚的人集合當中
-            post.likes.remove(request.user)
+        if request.user in commit.likes.all():  #如果使用者在這篇文已按讚的人集合當中
+            commit.likes.remove(request.user)
         else:
-            post.likes.add(request.user)
+            commit.likes.add(request.user)
 
-        serializer = self.get_serializer(post)
+        serializer = self.get_serializer(commit)
         return Response(serializer.data)
