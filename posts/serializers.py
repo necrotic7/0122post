@@ -1,8 +1,16 @@
 from rest_framework import serializers
+
+from django.contrib.auth.models import User
 from .models import Post
 
 
+class LikesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
 class PostSerializer(serializers.ModelSerializer):
+    likes = LikesSerializer(many = True, read_only = True)
     class Meta:
         model = Post
         fields = '__all__'

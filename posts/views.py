@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-
+from rest_framework.decorators import action
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS #登入驗證 
 
@@ -24,4 +24,12 @@ class PostViewSet(viewsets.ModelViewSet):
             
     def perform_create(self, serializer):
         serializer.save(creator = self.request.user)
-        
+
+    @action(['PATCH'], True)
+    def like(self, request, pk):
+        post = self.get_object()
+
+        if request.user in post.likes.all():  #如果使用者在這篇文已按讚的人集合當中
+            post.likes.remove(request.user)
+        else:
+            post.likes.add(request.user)

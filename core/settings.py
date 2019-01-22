@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'posts',
     'rest_framework',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
